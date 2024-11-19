@@ -1,0 +1,6 @@
+pour enregistrer les images nous le sstockons en public modification du fichier .env 
+FILESYSTEM_DISK=public
+
+ php artisan storage:link
+
+ 
