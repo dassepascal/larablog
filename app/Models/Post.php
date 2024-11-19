@@ -13,6 +13,21 @@ class Post extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+public static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($post) {
+        $post->user()->associate(auth()->user());
+        $post->category()->associate(request()->category);
+    });
+
+    self::updating(function ($post) {
+        $post->category()->associate(request()->category);
+    });
+} 
+
     public function user()
     {
         return $this->belongsTo(User::class);

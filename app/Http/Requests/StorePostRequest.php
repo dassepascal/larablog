@@ -11,7 +11,7 @@ class StorePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,30 @@ class StorePostRequest extends FormRequest
      */
     public function rules(): array
     {
+
+        if (request()->routeIs('posts.store'))
+        {
+            $imageRule = ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'];
+        }
+        elseif (request()->routeIs('posts.update'))
+        {
+            $imageRule = 'image|sometimes';
+        }
+       
+
         return [
-            //
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
+            'category' => ['required'],
+            'image' => $imageRule
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if($this->image === null)
+        {
+            $this->request->remove('image');
+        }
     }
 }

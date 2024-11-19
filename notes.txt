@@ -1,6 +1,54 @@
+// todo
+
+les images a retraiter
+la direction sur la page des blogs (gestion affichage categories)
+
+
+
+
+
 pour enregistrer les images nous le sstockons en public modification du fichier .env 
 FILESYSTEM_DISK=public
 
  php artisan storage:link
 
- 
+ pour la creation du post nous n'avons pas accés à user et category 
+ dans post.php on crée : 
+
+ public static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($post) {
+        $post->user()->associate(auth()->user());
+        $post->category()->associate(request()->category);
+    });
+} 
+
+protection contre l'update du post ajout de ce code dans le AuthServiceProvider
+
+ public function boot(): void
+    {
+        $this->registerPolicies();
+
+        Gate::define('update-post', function (User $user, Post $post) {
+            return $user->id === $post->user_id;
+        });
+    }
+
+    dans les vue  PostController :
+
+ public function edit(Post $post)
+    {
+        if( Gate:: denies('update-post', $post))
+        {
+            abort(403);
+        }
+        $categories = Category::all();
+        return view('posts.edit',[
+            'post' => $post,
+            'categories' => $categories
+        ]);
+    }
+
+
